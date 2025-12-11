@@ -3187,6 +3187,8 @@
     <Content Include="webpanel\vendor\jquery\jquery.slim.min.map" />
     <Content Include="Views\Shared\_CariLayout.cshtml" />
     <Content Include="Views\CariPanel\Index.cshtml" />
+    <Content Include="Views\CariPanel\Siparislerim.cshtml" />
+    <Content Include="veritabani\dataproje.bak" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
