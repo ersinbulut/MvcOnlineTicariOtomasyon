@@ -1,39 +1,196 @@
-﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
-@model List<Urun>
+﻿@using PagedList
+@model IPagedList<MvcOnlineTicariOtomasyon.Models.Siniflar.Urun>
+
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Ürün Yönetimi";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<br />
-<table class="table table-bordered">
-    <tr>
-        <th>ID</th>
-        <th>ÜRÜN</th>
-        <th>MARKA</th>
-        <th>STOK</th>
-        <th>ALIŞ FİYAT</th>
-        <th>SATIŞ FİYAT</th>
-        <th>KATEGORİ</th>
-        <th>GÖRSEL</th>
-        <th>SİL</th>
-        <th>GÜNCELLE</th>
-    </tr>
-    @foreach (var u in Model)
-    {
-        <tr>
-            <td>@u.UrunID</td>
-            <td>@u.UrunAd</td>
-            <td>@u.Marka</td>
-            <td>@u.Stok</td>
-            <td>@u.AlisFiyat</td>
-            <td>@u.SatisFiyat</td>
-            <td>@u.Kategori.KategoriAd</td>
-            <td>@u.UrunGorsel</td>
-            <td><a href="/Urun/UrunSil/@u.UrunID" class="btn btn-danger">Sil</a></td>
-            <td><a href="/Urun/UrunGetir/@u.UrunID" class="btn btn-success">Güncelle</a></td>
-        </tr>
-    }
-</table>
-<a href="/Urun/YeniUrun/" class="btn btn-primary">Yeni Ürün</a>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
+<div class="container mt-4">
+
+    <!-- ÜST BAŞLIK -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">📦 Ürün Yönetimi</h3>
+        <a href="@Url.Action("YeniUrun","Urun")" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Yeni Ürün
+        </a>
+    </div>
+
+
+    <!-- 🔍 ARAMA - FİLTRE - PAGE SIZE -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="get" class="row g-3">
+
+                <!-- Arama -->
+                <div class="col-md-4">
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.CurrentSearch"
+                           class="form-control"
+                           placeholder="Ürün ara..." />
+                </div>
+
+                <!-- Kategori Filtresi -->
+                <div class="col-md-3">
+                    <select name="kategoriId" class="form-control">
+                        <option value="">Tüm Kategoriler</option>
+
+                        @foreach (var k in ViewBag.Kategoriler as List<MvcOnlineTicariOtomasyon.Models.Siniflar.Kategori>)
+                        {
+                            <option value="@k.KategoriID"
+                                    @(ViewBag.CurrentKategori == k.KategoriID ? "selected" : "")>
+                                @k.KategoriAd
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Sayfa Başına Gösterim -->
+                <div class="col-md-3">
+                    <select name="pageSize" class="form-control">
+                        @{
+                            int[] sizes = { 5, 10, 20, 50, 100 };
+                        }
+                        @foreach (var s in sizes)
+                        {
+                            <option value="@s" @(ViewBag.PageSize == s ? "selected" : "")>@s kayıt</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Filtrele Butonu -->
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        <i class="fa fa-filter"></i> Uygula
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+
+
+    <!-- 📋 ÜRÜN TABLOSU -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Ürün</th>
+                        <th>Marka</th>
+                        <th>Stok</th>
+                        <th>Alış</th>
+                        <th>Satış</th>
+                        <th>Kategori</th>
+                        <th>Görsel</th>
+                        <th>Sil</th>
+                        <th>Güncelle</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@u.UrunID</td>
+                            <td>@u.UrunAd</td>
+                            <td>@u.Marka</td>
+                            <td>@u.Stok</td>
+                            <td>@u.AlisFiyat ₺</td>
+                            <td class="fw-bold">@u.SatisFiyat ₺</td>
+                            <td>@u.Kategori.KategoriAd</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(u.UrunGorsel))
+                                {
+                                    <img src="@u.UrunGorsel" width="50" class="img-thumbnail" />
+                                }
+                            </td>
+
+                            <td>
+                                <a href="@Url.Action("UrunSil","Urun", new { id = u.UrunID })"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Bu ürünü silmek istiyor musun?');">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="@Url.Action("UrunGetir","Urun", new { id = u.UrunID })"
+                                   class="btn btn-sm btn-success">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+
+
+
+    <!-- 🔢 SAYFALAMA -->
+    <nav aria-label="Sayfalama" class="mt-3">
+        <ul class="pagination justify-content-center">
+
+            <!-- Önceki -->
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { page = Model.PageNumber - 1, search = ViewBag.CurrentSearch, kategoriId = ViewBag.CurrentKategori, pageSize = ViewBag.PageSize })">
+                    &laquo;
+                </a>
+            </li>
+
+            @{
+                int maxPageLinks = 5;
+                int start = Model.PageNumber - (maxPageLinks / 2);
+
+                if (start < 1)
+                {
+                    start = 1;
+                }
+
+                int end = start + maxPageLinks - 1;
+
+                if (end > Model.PageCount)
+                {
+                    end = Model.PageCount;
+                    start = Math.Max(1, end - maxPageLinks + 1);
+                }
+            }
+
+
+            @for (int i = start; i <= end; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("Index", new { page = i, search = ViewBag.CurrentSearch, kategoriId = ViewBag.CurrentKategori, pageSize = ViewBag.PageSize })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Sonraki -->
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { page = Model.PageNumber + 1, search = ViewBag.CurrentSearch, kategoriId = ViewBag.CurrentKategori, pageSize = ViewBag.PageSize })">
+                    &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MvcOnlineTicariOtomasyon.Models.Siniflar;
+using PagedList;
 
 namespace MvcOnlineTicariOtomasyon.Controllers
 {
@@ -11,11 +12,45 @@ namespace MvcOnlineTicariOtomasyon.Controllers
     {
         Context c = new Context();
         // GET: Satis
-        public ActionResult Index()
+        public ActionResult Index(string urun, string personel, int page = 1, int pageSize = 10)
         {
-            var degerler = c.satisHarekets.ToList();
-            return View(degerler);
+            var satislar = c.satisHarekets.AsQueryable();
+
+            // 🔍 Ürün Arama
+            if (!string.IsNullOrEmpty(urun))
+            {
+                satislar = satislar.Where(x => x.Urun.UrunAd.Contains(urun));
+            }
+
+            // 👤 Personel Filtresi
+            if (!string.IsNullOrEmpty(personel))
+            {
+                satislar = satislar.Where(x =>
+                    (x.Personel.PersonelAd + " " + x.Personel.PersonelSoyad) == personel
+                );
+            }
+
+            // 📌 Personel Listesi (dropdown için)
+            var personelList = c.Personels
+                .Select(x => x.PersonelAd + " " + x.PersonelSoyad)
+                .Distinct()
+                .ToList();
+
+            ViewBag.Personeller = personelList;
+
+            // 📌 ViewBag'lere filtre bilgilerini gönder
+            ViewBag.Urun = urun;
+            ViewBag.SelectedPersonel = personel;
+            ViewBag.PageSize = pageSize;
+
+            // 📄 Sayfalama
+            var model = satislar
+                .OrderByDescending(x => x.SatisID)
+                .ToPagedList(page, pageSize);
+
+            return View(model);
         }
+
         [HttpGet]
         public ActionResult YeniSatis()
         {

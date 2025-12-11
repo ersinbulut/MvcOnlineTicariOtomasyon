@@ -1,0 +1,38 @@
+﻿@model List<MvcOnlineTicariOtomasyon.Models.Siniflar.FaturaKalem>
+<input type="hidden" name="FaturaID" value="@ViewBag.FaturaID" />
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>Açıklama</th>
+            <th>Miktar</th>
+            <th>Birim Fiyat</th>
+            <th>Tutar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var x in Model)
+        {
+            <tr>
+                <td>@x.Aciklama</td>
+                <td>@x.Miktar</td>
+                <td>@x.BirimFiyat ₺</td>
+                <td>@x.Tutar ₺</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button class="btn btn-success mt-2" onclick="YeniKalemAc(@ViewBag.FaturaID)">
+    <i class="fa fa-plus"></i> Yeni Kalem
+</button>
+
+<div id="yeniKalemFormu"></div>
+
+<script>
+    function YeniKalemAc(faturaId) {
+        $.get('/Fatura/YeniKalemPopup?faturaId=' + faturaId, function (data) {
+            $("#yeniKalemFormu").html(data);
+        });
+    }
+</script>

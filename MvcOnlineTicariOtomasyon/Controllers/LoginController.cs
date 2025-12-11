@@ -10,7 +10,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 {
     public class LoginController : Controller
     {
-        Context c=new Context();
+        Context c = new Context();
         // GET: Login
         public ActionResult Index()
         {
@@ -26,7 +26,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
         {
             c.Carilers.Add(p);
             c.SaveChanges();
-            return PartialView(); 
+            return PartialView();
         }
         [HttpGet]
         public ActionResult CariLogin1()
@@ -47,6 +47,32 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             {
                 return View();
             }
+        }
+        [HttpGet]
+        public ActionResult AdminLogin()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult AdminLogin(Admin admin)
+        {
+            var bilgiler = c.Admins.FirstOrDefault(x => x.KullaniciAd == admin.KullaniciAd && x.Sifre == admin.Sifre);
+            if (bilgiler != null)
+            {
+                FormsAuthentication.SetAuthCookie(bilgiler.KullaniciAd, false);
+                Session["KullaniciAd"] = bilgiler.KullaniciAd.ToString();
+                return RedirectToAction("Index", "Kategori");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Login");
+            }
+        }
+        public ActionResult Logout()
+        {
+            FormsAuthentication.SignOut();
+            Session.Abandon();
+            return RedirectToAction("Index", "Login");
         }
     }
 }

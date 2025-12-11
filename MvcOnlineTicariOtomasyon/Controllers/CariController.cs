@@ -1,4 +1,5 @@
 ﻿using MvcOnlineTicariOtomasyon.Models.Siniflar;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,39 @@ namespace MvcOnlineTicariOtomasyon.Controllers
     {
         Context c = new Context();
         // GET: Car
-        public ActionResult Index()
+        public ActionResult Index(string search, string city, int page = 1, int pageSize = 10)
         {
-            var degerler = c.Carilers.Where(x=>x.Durum == true).ToList();
-            return View(degerler);
+            var cariler = c.Carilers.AsQueryable();
+
+            // Arama
+            if (!string.IsNullOrEmpty(search))
+            {
+                cariler = cariler.Where(x =>
+                    x.CariAd.Contains(search) ||
+                    x.CariSoyad.Contains(search) ||
+                    x.CariMail.Contains(search));
+            }
+
+            // Şehir filtresi
+            if (!string.IsNullOrEmpty(city))
+            {
+                cariler = cariler.Where(x => x.CariSehir == city);
+            }
+
+            // Şehir listesi (ViewBag'e aktar)
+            ViewBag.Sehirler = c.Carilers
+                                 .Select(x => x.CariSehir)
+                                 .Distinct()
+                                 .OrderBy(x => x)
+                                 .ToList();
+
+            ViewBag.Search = search;
+            ViewBag.City = city;
+            ViewBag.PageSize = pageSize;
+
+            return View(cariler.ToList().ToPagedList(page, pageSize));
         }
+
         [HttpGet]
         public ActionResult YeniCari()
         {

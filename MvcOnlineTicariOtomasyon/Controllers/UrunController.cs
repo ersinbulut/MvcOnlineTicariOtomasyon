@@ -1,9 +1,10 @@
-﻿using MvcOnlineTicariOtomasyon.Models.Siniflar;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MvcOnlineTicariOtomasyon.Models.Siniflar;
+using PagedList;
 
 namespace MvcOnlineTicariOtomasyon.Controllers
 {
@@ -11,11 +12,26 @@ namespace MvcOnlineTicariOtomasyon.Controllers
     {
         Context c = new Context();
         // GET: Urun
-        public ActionResult Index()
+        public ActionResult Index(string search, int? kategoriId, int page = 1, int pageSize = 10)
         {
-            var urunler = c.Uruns.Where(x=>x.Durum == true).ToList();
-            return View(urunler);
+            var urunler = c.Uruns.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+                urunler = urunler.Where(x => x.UrunAd.Contains(search) || x.Marka.Contains(search));
+
+            if (kategoriId != null)
+                urunler = urunler.Where(x => x.Kategoriid == kategoriId);
+
+            urunler = urunler.OrderBy(x => x.UrunID);
+
+            ViewBag.Kategoriler = c.Kategoris.ToList();
+            ViewBag.CurrentSearch = search;
+            ViewBag.CurrentKategori = kategoriId;
+            ViewBag.PageSize = pageSize;
+
+            return View(urunler.ToPagedList(page, pageSize));
         }
+
         [HttpGet]
         public ActionResult YeniUrun()
         {

@@ -1,37 +1,136 @@
 ﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
-@model List<SatisHareket>
+@using PagedList
+@model IPagedList<SatisHareket>
+
 @{
     ViewBag.Title = "DepartmanPersonelSatis";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Departman Personel Satış</h2>
-<br />
-<ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Personel Adı: @ViewBag.dpers</li>
-</ol>
-<table class="table table-condensed">
-    <tr>
-        <th>Satış ID</th>
-        <th>Ürün</th>
-        <th>Cari</th>
-        <th>Fiyat</th>
-        <th>Adet</th>
-        <th>Toplam</th>
-        <th>Tarih</th>
-        <th>Yazdır</th>
-    </tr>
-    @foreach (var x in Model)
-    {
-        <tr>
-            <td>@x.SatisID</td>
-            <td>@x.Urun.UrunAd</td>
-            <td>@x.Cariler.CariAd @x.Cariler.CariSoyad </td>
-            <td>@x.Fiyat</td>
-            <td>@x.Adet</td>
-            <td>@x.ToplamTutar</td>
-            <td>@x.Tarih</td>
-            <td><a href="" class="btn btn-default" style="background-color:dodgerblue;">Yazdır</a></td>
-        </tr>
-    }
-</table>
+<div class="container mt-4">
+
+    <h3 class="fw-bold">👤 Personel Satışları - @ViewBag.dpers</h3>
+    <hr />
+
+    <!-- 🔍 Filtreleme -->
+    <form method="get" class="row g-3 mb-3">
+
+        <div class="col-md-4">
+            <input type="text" name="urun"
+                   value="@ViewBag.Urun"
+                   placeholder="Ürün ara..."
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-4">
+            <input type="text" name="cari"
+                   value="@ViewBag.Cari"
+                   placeholder="Cari ara..."
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+            <select name="pageSize" class="form-control">
+                @{
+                    int[] sizes = { 5, 10, 20, 50, 100 };
+                }
+                @foreach (var s in sizes)
+                {
+                    <option value="@s" @(ViewBag.PageSize == s ? "selected" : "")>@s kayıt</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">
+                <i class="fa fa-search"></i> Uygula
+            </button>
+        </div>
+    </form>
+
+    <!-- 📄 Tablo -->
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Satış ID</th>
+                <th>Ürün</th>
+                <th>Cari</th>
+                <th>Fiyat</th>
+                <th>Adet</th>
+                <th>Toplam</th>
+                <th>Tarih</th>
+                <th>Yazdır</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td>@x.SatisID</td>
+                    <td>@x.Urun.UrunAd</td>
+                    <td>@x.Cariler.CariAd @x.Cariler.CariSoyad</td>
+                    <td>@x.Fiyat ₺</td>
+                    <td>@x.Adet</td>
+                    <td>@x.ToplamTutar ₺</td>
+                    <td>@x.Tarih.ToShortDateString()</td>
+                    <td>
+                        <a href="#" class="btn btn-info btn-sm">
+                            <i class="fa fa-print"></i> Yazdır
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- 📌 Sayfalama -->
+    <nav aria-label="Sayfa">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link"
+                   href="@Url.Action("DepartmanPersonelSatis", new { page = Model.PageNumber - 1, urun = ViewBag.Urun, cari = ViewBag.Cari, pageSize = ViewBag.PageSize })">
+                    «
+                </a>
+            </li>
+
+            @{
+                int maxPageLinks = 5;
+                int start = Model.PageNumber - (maxPageLinks / 2);
+
+                if (start < 1)
+                {
+                    start = 1;
+                }
+
+                int end = start + maxPageLinks - 1;
+
+                if (end > Model.PageCount)
+                {
+                    end = Model.PageCount;
+                    start = Math.Max(1, end - maxPageLinks + 1);
+                }
+            }
+
+
+            @for (int i = start; i <= end; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("DepartmanPersonelSatis", new { page = i, urun = ViewBag.Urun, cari = ViewBag.Cari, pageSize = ViewBag.PageSize })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link"
+                   href="@Url.Action("DepartmanPersonelSatis", new { page = Model.PageNumber + 1, urun = ViewBag.Urun, cari = ViewBag.Cari, pageSize = ViewBag.PageSize })">
+                    »
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>

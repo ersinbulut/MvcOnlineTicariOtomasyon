@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MvcOnlineTicariOtomasyon.Models.Siniflar;
+using PagedList;
 
 namespace MvcOnlineTicariOtomasyon.Controllers
 {
@@ -11,11 +12,36 @@ namespace MvcOnlineTicariOtomasyon.Controllers
     {
         Context c = new Context();
         // GET: Personel
-        public ActionResult Index()
+        public ActionResult Index(string search, int? department, int page = 1, int pageSize = 10)
         {
-            var degerler = c.Personels.ToList();
-            return View(degerler);
+            var personeller = c.Personels.AsQueryable();
+
+            // Arama
+            if (!string.IsNullOrEmpty(search))
+            {
+                personeller = personeller.Where(x =>
+                    x.PersonelAd.Contains(search) ||
+                    x.PersonelSoyad.Contains(search));
+            }
+
+            // Departman filtreleme
+            if (department != null)
+            {
+                personeller = personeller.Where(x => x.DepartmanID == department);
+            }
+
+            // Departman listesi
+            ViewBag.Departmanlar = c.Departmans.ToList();
+
+            ViewBag.Search = search;
+            ViewBag.Department = department;
+            ViewBag.PageSize = pageSize;
+
+            return View(personeller
+                        .OrderBy(x => x.PersonelID)
+                        .ToPagedList(page, pageSize));
         }
+
         [HttpGet]
         public ActionResult PersonelEkle()
         {

@@ -1,0 +1,46 @@
+﻿@model MvcOnlineTicariOtomasyon.Models.Siniflar.FaturaKalem
+<input type="hidden" name="FaturaID" value="@ViewBag.FaturaID" />
+
+<form id="YeniKalemForm">
+    <input type="hidden" name="FaturaID" value="@ViewBag.FaturaID" />
+
+    <div class="mb-2">
+        <label>Açıklama</label>
+        <input type="text" name="Aciklama" class="form-control" required />
+    </div>
+
+    <div class="mb-2">
+        <label>Miktar</label>
+        <input type="number" name="Miktar" class="form-control" required />
+    </div>
+
+    <div class="mb-2">
+        <label>Birim Fiyat</label>
+        <input type="number" step="0.01" name="BirimFiyat" class="form-control" required />
+    </div>
+
+    <button type="button" class="btn btn-primary mt-2" onclick="KalemKaydet()">
+        Kaydet
+    </button>
+</form>
+
+<script>
+    function KalemKaydet() {
+        $.ajax({
+            type: "POST",
+            url: "/Fatura/YeniKalemPopup",
+            data: $("#YeniKalemForm").serialize(),
+            success: function (res) {
+                if (res.success) {
+                    alert("Kalem eklendi!");
+                    location.reload(); // Listeyi güncellemek için sayfayı yenile
+                } else {
+                    alert("Hata: " + res.message);
+                }
+            },
+            error: function (xhr) {
+                alert("Sunucu hatası: " + xhr.statusText);
+            }
+        });
+    }
+</script>

@@ -1,9 +1,10 @@
-﻿using MvcOnlineTicariOtomasyon.Models.Siniflar;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MvcOnlineTicariOtomasyon.Models.Siniflar;
+using PagedList;
 
 namespace MvcOnlineTicariOtomasyon.Controllers
 {
@@ -11,11 +12,21 @@ namespace MvcOnlineTicariOtomasyon.Controllers
     {
         Context c = new Context();
         // GET: Departman
-        public ActionResult Index()
+        public ActionResult Index(string search, int page = 1, int pageSize = 10)
         {
-            var degerler = c.Departmans.Where(x=>x.Durum == true).ToList();
-            return View(degerler);
+            var list = c.Departmans.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+                list = list.Where(x => x.DepartmanAd.Contains(search));
+
+            list = list.OrderBy(x => x.DepartmanID);
+
+            ViewBag.CurrentSearch = search;
+            ViewBag.PageSize = pageSize;
+
+            return View(list.ToPagedList(page, pageSize));
         }
+
         [HttpGet]
         public ActionResult DepartmanEkle()
         {
@@ -54,12 +65,42 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             ViewBag.d = dpt;
             return View(degerler);
         }
-        public ActionResult DepartmanPersonelSatis(int id)
+        public ActionResult DepartmanPersonelSatis(int id, string urun, string cari, int page = 1, int pageSize = 10)
         {
-            var degerler = c.satisHarekets.Where(x => x.PersonelID == id).ToList();
-            var per = c.Personels.Where(x => x.PersonelID == id).Select(y => y.PersonelAd + " " + y.PersonelSoyad).FirstOrDefault();
-            ViewBag.dpers = per;
-            return View(degerler);
+            var personel = c.Personels.Where(x => x.PersonelID == id)
+                .Select(x => x.PersonelAd + " " + x.PersonelSoyad)
+                .FirstOrDefault();
+
+            ViewBag.dpers = personel;
+
+            var satislar = c.satisHarekets.Where(x => x.PersonelID == id).AsQueryable();
+
+            // Ürün filtreleme
+            if (!string.IsNullOrEmpty(urun))
+            {
+                satislar = satislar.Where(x => x.Urun.UrunAd.Contains(urun));
+            }
+
+            // Cari filtreleme
+            if (!string.IsNullOrEmpty(cari))
+            {
+                satislar = satislar.Where(x =>
+                    (x.Cariler.CariAd + " " + x.Cariler.CariSoyad).Contains(cari)
+                );
+            }
+
+            // ViewBag'ler
+            ViewBag.Urun = urun;
+            ViewBag.Cari = cari;
+            ViewBag.PageSize = pageSize;
+
+            // PagedList
+            var model = satislar
+                .OrderByDescending(x => x.SatisID)
+                .ToPagedList(page, pageSize);
+
+            return View(model);
         }
+
     }
 }

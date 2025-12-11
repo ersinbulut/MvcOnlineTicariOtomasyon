@@ -13,49 +13,81 @@ namespace MvcOnlineTicariOtomasyon.Controllers
         // GET: İstatistik
         public ActionResult Index()
         {
-            var deger1 = c.Carilers.Count().ToString();
-            ViewBag.d1 = deger1;
-            var deger2 = c.Uruns.Count().ToString();
-            ViewBag.d2 = deger2;
-            var deger3 = c.Personels.Count().ToString();
-            ViewBag.d3 = deger3;
-            var deger4 = c.Kategoris.Count().ToString();
-            ViewBag.d4 = deger4;
-            var deger5 = c.Uruns.Sum(x=>x.Stok).ToString();
-            ViewBag.d5 = deger5;
-            var deger6 = (from x in c.Uruns select x.Marka).Distinct().Count().ToString();
-            ViewBag.d6 = deger6;
-            var deger7 = c.Uruns.Count(x => x.Stok <= 20).ToString();
-            ViewBag.d7 = deger7;
-            var deger8 = (from x in c.Uruns orderby x.SatisFiyat descending select x.UrunAd).FirstOrDefault();
-            ViewBag.d8 = deger8;
-            var deger9 = (from x in c.Uruns orderby x.SatisFiyat ascending select x.UrunAd).FirstOrDefault();
-            ViewBag.d9 = deger9;
-            var deger10 = c.Uruns.Count(x => x.UrunAd == "Buzdolabı").ToString();
-            ViewBag.d10 = deger10;
-            var deger11 = c.Uruns.Count(x => x.UrunAd == "Laptop").ToString();
-            ViewBag.d11 = deger11;
+            try
+            {
+                // Toplam kayıt sayıları
+                ViewBag.d1 = c.Carilers?.Count().ToString() ?? "0";
+                ViewBag.d2 = c.Uruns?.Count().ToString() ?? "0";
+                ViewBag.d3 = c.Personels?.Count().ToString() ?? "0";
+                ViewBag.d4 = c.Kategoris?.Count().ToString() ?? "0";
 
-            var deger12 = c.Uruns.GroupBy(x => x.Marka).OrderByDescending(z => z.Count()).Select(y => y.Key).FirstOrDefault();
-            ViewBag.d12 = deger12;
+                // Stok toplamı
+                ViewBag.d5 = c.Uruns?.Sum(x => (int?)x.Stok)?.ToString() ?? "0";
 
-            var deger13 = c.Uruns.Where(x => x.UrunID == (c.satisHarekets.GroupBy(u => u.UrunID).OrderByDescending(z => z.Count()).
-            Select(y => y.Key).FirstOrDefault())).Select(k=>k.UrunAd).FirstOrDefault();
-            ViewBag.d13 = deger13;
+                // Marka sayısı
+                ViewBag.d6 = c.Uruns?.Select(x => x.Marka).Distinct().Count().ToString() ?? "0";
 
-            var deger14 = c.satisHarekets.Sum(x => x.ToplamTutar).ToString();
-            ViewBag.d14 = deger14;
+                // Stokta 20 veya altı ürün sayısı
+                ViewBag.d7 = c.Uruns?.Count(x => x.Stok <= 20).ToString() ?? "0";
 
-            DateTime bugun = DateTime.Today;
-            var deger15 = c.satisHarekets.Count(x => x.Tarih == bugun).ToString();
-            ViewBag.d15 = deger15;
+                // En pahalı ve en ucuz ürün
+                ViewBag.d8 = c.Uruns?.OrderByDescending(x => x.SatisFiyat).Select(x => x.UrunAd).FirstOrDefault() ?? "-";
+                ViewBag.d9 = c.Uruns?.OrderBy(x => x.SatisFiyat).Select(x => x.UrunAd).FirstOrDefault() ?? "-";
 
-            var deger16 = c.satisHarekets.Where(x => x.Tarih == bugun).Sum(y => y.ToplamTutar).ToString();
-            ViewBag.d16 = deger16;
+                // Belirli ürünlerin sayısı
+                ViewBag.d10 = c.Uruns?.Count(x => x.UrunAd == "Buzdolabı").ToString() ?? "0";
+                ViewBag.d11 = c.Uruns?.Count(x => x.UrunAd == "Laptop").ToString() ?? "0";
 
+                // En çok ürünü olan marka
+                ViewBag.d12 = c.Uruns?.GroupBy(x => x.Marka)
+                                     .OrderByDescending(z => z.Count())
+                                     .Select(y => y.Key)
+                                     .FirstOrDefault() ?? "-";
+
+                // En çok satılan ürün
+                var enCokSatanUrunID = c.satisHarekets?
+                                         .GroupBy(u => u.UrunID)
+                                         .OrderByDescending(g => g.Count())
+                                         .Select(g => g.Key)
+                                         .FirstOrDefault();
+
+                ViewBag.d13 = c.Uruns?.Where(x => x.UrunID == enCokSatanUrunID)
+                                       .Select(x => x.UrunAd)
+                                       .FirstOrDefault() ?? "-";
+
+                // Toplam satış
+                ViewBag.d14 = c.satisHarekets?.Sum(x => (decimal?)x.ToplamTutar)?.ToString() ?? "0";
+
+                // Bugünün satışları
+                DateTime bugun = DateTime.Today;
+
+                if (c.satisHarekets != null && c.satisHarekets.Any(x => x.Tarih == bugun))
+                {
+                    ViewBag.d15 = c.satisHarekets.Count(x => x.Tarih == bugun).ToString();
+                    ViewBag.d16 = c.satisHarekets.Where(x => x.Tarih == bugun)
+                                                 .Sum(x => (decimal?)x.ToplamTutar)
+                                                 .ToString();
+                }
+                else
+                {
+                    ViewBag.d15 = "0";
+                    ViewBag.d16 = "0";
+                }
+            }
+            catch (Exception ex)
+            {
+                // Hata oluşursa tüm ViewBag değerlerini default ata ve mesaj göster
+                ViewBag.Hata = "Veriler alınırken bir hata oluştu: " + ex.Message;
+
+                ViewBag.d1 = ViewBag.d2 = ViewBag.d3 = ViewBag.d4 = "0";
+                ViewBag.d5 = ViewBag.d6 = ViewBag.d7 = ViewBag.d8 = ViewBag.d9 = "0";
+                ViewBag.d10 = ViewBag.d11 = ViewBag.d12 = ViewBag.d13 = "0";
+                ViewBag.d14 = ViewBag.d15 = ViewBag.d16 = "0";
+            }
 
             return View();
         }
+
 
         public ActionResult KolayTablolar()
         {
