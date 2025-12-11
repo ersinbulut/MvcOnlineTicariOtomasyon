@@ -1,28 +1,66 @@
 ﻿@model MvcOnlineTicariOtomasyon.Models.Siniflar.Cariler
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Profil Güncelleme";
     Layout = "~/Views/Shared/_CariLayout.cshtml";
 }
-<br />
-<h2>Mvc Online Ticari Otomasyon Cari Bilgi Paneli</h2>
 
-@using (Html.BeginForm("Index2", "CariPanel", FormMethod.Post))
-{
-    <div class="form-group">
-        @Html.LabelFor(model => model.CariAd)
-        @Html.TextBoxFor(model => model.CariAd, new { @class = "form-control", placeholder = "Adınızı Giriniz" })
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center rounded-top-4">
+                    <h4 class="mb-0">
+                        <i class="fa-solid fa-user-gear"></i> Profil Bilgilerim
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Index2", "CariPanel", FormMethod.Post))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fa-solid fa-user"></i> Adınız
+                            </label>
+                            @Html.TextBoxFor(model => model.CariAd, new { @class = "form-control form-control-lg rounded-3", placeholder = "Adınızı Giriniz" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fa-solid fa-user"></i> Soyadınız
+                            </label>
+                            @Html.TextBoxFor(model => model.CariSoyad, new { @class = "form-control form-control-lg rounded-3", placeholder = "Soyadınızı Giriniz" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fa-solid fa-city"></i> Şehir
+                            </label>
+                            @Html.TextBoxFor(model => model.CariSehir, new { @class = "form-control form-control-lg rounded-3", placeholder = "Şehrinizi Giriniz" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fa-solid fa-lock"></i> Şifre
+                            </label>
+                            @Html.PasswordFor(model => model.CariSifre, new { @class = "form-control form-control-lg rounded-3", placeholder = "Yeni Şifrenizi Giriniz" })
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                                <i class="fa-solid fa-floppy-disk"></i> Bilgilerimi Güncelle
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer text-center text-muted small">
+                    Son güncelleme: @DateTime.Now.ToShortDateString()
+                </div>
+            </div>
+
+        </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.CariSoyad)
-        @Html.TextBoxFor(model => model.CariSoyad, new { @class = "form-control", placeholder = "Soyadınızı Giriniz" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.CariSehir)
-        @Html.TextBoxFor(model => model.CariSehir, new { @class = "form-control", placeholder = "Soyadınızı Giriniz" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.CariSifre)
-        @Html.TextBoxFor(model => model.CariSifre, new { @class = "form-control", placeholder = "Mail Adresinizi Giriniz" })
-    </div>
-    <button type="submit" class="btn btn-primary">Bilgilerimi Güncelle</button>
-}
+</div>
