@@ -3200,6 +3200,7 @@
     <Content Include="Views\Fatura\FaturaKalemPopup.cshtml" />
     <Content Include="Views\Fatura\YeniKalemPopup.cshtml" />
     <Content Include="Views\Alertler\Index.cshtml" />
+    <Content Include="Views\Urun\SatisYap.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -94,6 +94,7 @@
                         <th>Görsel</th>
                         <th>Sil</th>
                         <th>Güncelle</th>
+                        <th>Satış Yap</th>
                     </tr>
                 </thead>
 
@@ -127,6 +128,13 @@
                                 <a href="@Url.Action("UrunGetir","Urun", new { id = u.UrunID })"
                                    class="btn btn-sm btn-success">
                                     <i class="fa fa-edit"></i>
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="@Url.Action("SatisYap","Urun", new { id = u.UrunID })"
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fa fa-money-bill"></i>
                                 </a>
                             </td>
                         </tr>
