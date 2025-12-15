@@ -57,6 +57,14 @@ namespace MvcOnlineTicariOtomasyon.Controllers
         [HttpPost]
         public ActionResult PersonelEkle(Personel p)
         {
+            if(Request.Files.Count > 0)
+            {
+                string dosyaadi = System.IO.Path.GetFileName(Request.Files[0].FileName);
+                string uzanti = System.IO.Path.GetExtension(Request.Files[0].FileName);
+                string yol = "/Image/" + dosyaadi + uzanti;
+                Request.Files[0].SaveAs(Server.MapPath(yol));
+                p.PersonelGorsel = "/Image/" + dosyaadi + uzanti;
+            }
             c.Personels.Add(p);
             c.SaveChanges();
             return RedirectToAction("Index");
@@ -73,8 +81,17 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             var prs = c.Personels.Find(id);
             return View("PersonelGetir",prs);
         }
+        [HttpPost]
         public ActionResult PersonelGuncelle(Personel p)
         {
+            if (Request.Files.Count > 0)
+            {
+                string dosyaadi = System.IO.Path.GetFileName(Request.Files[0].FileName);
+                string uzanti = System.IO.Path.GetExtension(Request.Files[0].FileName);
+                string yol = "/Image/" + dosyaadi + uzanti;
+                Request.Files[0].SaveAs(Server.MapPath(yol));
+                p.PersonelGorsel = "/Image/" + dosyaadi + uzanti;
+            }
             var prs = c.Personels.Find(p.PersonelID);
             prs.PersonelAd = p.PersonelAd;
             prs.PersonelSoyad = p.PersonelSoyad;

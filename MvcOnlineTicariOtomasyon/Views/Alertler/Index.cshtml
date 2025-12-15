@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="~/Scripts/jquery-3.7.1.js"></script>
+
+<button class="btn btn-primary" id="btn1">Buton 1</button>
+<button class="btn btn-warning" id="btn2">Buton 2</button>
+<button class="btn btn-info" id="btn3">Buton 3</button>
+<button class="btn btn-danger" id="btn4">Buton 4</button>
+<button class="btn btn-default" style="background-color:lightcoral;" id="btn5">Buton 5</button>
+
+<script>
+    $('#btn1').click(function () {
+        Swal.fire('Merhaba dünya!');
+    });
+</script>
+<script>
+    $('#btn2').click(function () {
+        Swal.fire('Burası Başlık!','Burası metin...');
+    });
+</script>
+<script>
+    $('#btn3').click(function () {
+        Swal.fire('Good Job !', 'You clicked the button!','success');
+    });
+</script>
+<script>
+    $('#btn4').click(function () {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swalWithBootstrapButtons.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelled",
+                    text: "Your imaginary file is safe :)",
+                    icon: "error"
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $('#btn5').click(function () {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+            }
+        });
+    });
+</script>
