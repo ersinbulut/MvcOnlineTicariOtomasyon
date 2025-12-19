@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "QR Kod Yönetimi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-qrcode"></i> QR Kod Oluşturma Paneli</h4>
+                </div>
+
+                <div class="card-body">
+
+                    @using (Html.BeginForm("Index", "QR", FormMethod.Post))
+                    {
+                        <div class="mb-3">
+                            <label>QR Türü</label>
+                            <select name="tur" class="form-control">
+                                <option value="Metin">Serbest Metin</option>
+                                <option value="Urun">Ürün</option>
+                                <option value="Cari">Cari</option>
+                                <option value="Fatura">Fatura</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Değer</label>
+                            <input type="text"
+                                   name="kod"
+                                   class="form-control"
+                                   placeholder="ID / Metin / URL"
+                                   required />
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-magic"></i> QR Oluştur
+                        </button>
+                    }
+
+                    @if (ViewBag.Hata != null)
+                    {
+                        <div class="alert alert-danger mt-3 text-center">
+                            @ViewBag.Hata
+                        </div>
+                    }
+
+                    @if (ViewBag.karekodimage != null)
+                    {
+                        <div class="text-center mt-4">
+                            <img src="@ViewBag.karekodimage" class="img-thumbnail mb-3" style="max-width:300px;" />
+
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="@Url.Action("Download", "QR", new { base64 = ViewBag.DownloadImage })"
+                                   class="btn btn-primary">
+                                    <i class="fas fa-download"></i> İndir
+                                </a>
+
+                                <button onclick="printQR()" class="btn btn-secondary">
+                                    <i class="fas fa-print"></i> Yazdır
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function printQR() {
+        var img = document.querySelector("img");
+        var win = window.open('', '_blank');
+        win.document.write('<img src="' + img.src + '" style="width:300px;">');
+        win.print();
+        win.close();
+    }
+</script>

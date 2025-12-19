@@ -23,13 +23,14 @@
 
             <form method="get" class="row g-3">
 
-                <!-- Arama -->
-                <input type="text"
-                       name="search"
-                       value="@ViewBag.CurrentSearch"
-                       class="form-control"
-                       placeholder="Kargo Takip No / Alıcı / Personel ara..." />
-
+                <!-- 🔍 Arama -->
+                <div class="col-md-6">
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.CurrentSearch"
+                           class="form-control"
+                           placeholder="Kargo Takip No / Alıcı / Personel ara..." />
+                </div>
 
                 <!-- Sayfa başına gösterim -->
                 <div class="col-md-4">
@@ -39,7 +40,9 @@
                         }
                         @foreach (var s in sizes)
                         {
-                            <option value="@s" @(ViewBag.PageSize == s ? "selected" : "")>@s kayıt</option>
+                            <option value="@s" @(ViewBag.PageSize == s ? "selected" : "")>
+                                @s kayıt
+                            </option>
                         }
                     </select>
                 </div>
@@ -52,6 +55,7 @@
                 </div>
 
             </form>
+
 
         </div>
     </div>
@@ -67,6 +71,7 @@
                         <th>ID</th>
                         <th>Personel</th>
                         <th>Alıcı</th>
+                        <th>Takip Kodu</th>
                         <th>Tarih</th>
                         <th>Detaylar</th>
                     </tr>
@@ -79,13 +84,12 @@
                             <td>@d.KargoDetayID</td>
                             <td>@d.Personel</td>
                             <td>@d.Alici</td>
+                            <td>@d.TakipKodu</td>
                             <td>@d.Tarih</td>
-
                             <td>
-                                <a href="@Url.Action("KargoSil","Kargo", new { id = d.KargoDetayID })"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Bu Kargoı silmek istiyor musun?');">
-                                    <i class="fa fa-trash"></i>
+                                <a href="@Url.Action("KargoTakip","Kargo", new { id = d.TakipKodu })"
+                                   class="btn btn-sm btn-danger">
+                                    <i class="fa fa-street-view"></i>
                                 </a>
                             </td>
                         </tr>

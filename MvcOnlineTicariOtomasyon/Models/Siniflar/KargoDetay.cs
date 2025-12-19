@@ -15,7 +15,7 @@ namespace MvcOnlineTicariOtomasyon.Models.Siniflar
         [StringLength(100)]
         public string Aciklama { get; set; }
         [Column(TypeName = "Varchar")]
-        [StringLength(10)]
+        [StringLength(20)]
         public string TakipKodu { get; set; }//1234123AB
         [Column(TypeName = "Varchar")]
         [StringLength(20)]
@@ -23,6 +23,6 @@ namespace MvcOnlineTicariOtomasyon.Models.Siniflar
         [Column(TypeName = "Varchar")]
         [StringLength(50)]
         public string Alici { get; set; }
-        public DateTime Tarih { get; set; }
+        public DateTime? Tarih { get; set; }
     }
 }
