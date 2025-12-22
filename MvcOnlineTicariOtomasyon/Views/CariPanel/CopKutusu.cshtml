@@ -1,0 +1,56 @@
+﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
+@model List<Mesajlar>
+
+@{
+    ViewBag.Title = "Çöp Kutusu";
+    Layout = "~/Views/Shared/_CariLayout.cshtml";
+}
+
+<section class="content-header">
+    <h1>🗑️ Çöp Kutusu</h1>
+</section>
+
+<section class="content">
+    <div class="card">
+        <div class="card-body table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Gönderici</th>
+                        <th>Konu</th>
+                        <th>Tarih</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Gönderici</td>
+                            <td>@item.Konu</td>
+                            <td>@item.Tarih.ToShortDateString()</td>
+                            <td>
+                                <a href="/CariPanel/MesajDetay/@item.MesajID"
+                                   class="btn btn-sm btn-info">
+                                    Görüntüle
+                                </a>
+                                <a href="/CariPanel/MesajKaliciSil/@item.MesajID"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Mesaj kalıcı olarak silinsin mi?')">
+                                    Kalıcı Sil
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-warning">
+                    Çöp kutusu boş.
+                </div>
+            }
+        </div>
+    </div>
+</section>

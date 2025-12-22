@@ -143,6 +143,7 @@
     <Compile Include="Controllers\KargoController.cs" />
     <Compile Include="Controllers\KategoriController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MesajController.cs" />
     <Compile Include="Controllers\PersonelController.cs" />
     <Compile Include="Controllers\QRController.cs" />
     <Compile Include="Controllers\SatisController.cs" />
@@ -161,6 +162,14 @@
     <Compile Include="Migrations\202512191502323_mig44.Designer.cs">
       <DependentUpon>202512191502323_mig44.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512221125423_mig45.cs" />
+    <Compile Include="Migrations\202512221125423_mig45.Designer.cs">
+      <DependentUpon>202512221125423_mig45.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512221157152_mig46.cs" />
+    <Compile Include="Migrations\202512221157152_mig46.Designer.cs">
+      <DependentUpon>202512221157152_mig46.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Siniflar\Admin.cs" />
     <Compile Include="Models\Siniflar\Cariler.cs" />
@@ -174,6 +183,7 @@
     <Compile Include="Models\Siniflar\KargoDetay.cs" />
     <Compile Include="Models\Siniflar\KargoTakip.cs" />
     <Compile Include="Models\Siniflar\Kategori.cs" />
+    <Compile Include="Models\Siniflar\Mesajlar.cs" />
     <Compile Include="Models\Siniflar\Personel.cs" />
     <Compile Include="Models\Siniflar\SatisHareket.cs" />
     <Compile Include="Models\Siniflar\sinif1.cs" />
@@ -3233,10 +3243,17 @@
     <Content Include="Views\Grafik\Index5.cshtml" />
     <Content Include="Views\Grafik\Index6.cshtml" />
     <Content Include="Views\Grafik\Index7.cshtml" />
+    <Content Include="Views\CariPanel\GelenMesajlar.cshtml" />
+    <Content Include="Views\CariPanel\MesajDetay.cshtml" />
+    <Content Include="Views\CariPanel\YeniMesaj.cshtml" />
+    <Content Include="Views\CariPanel\CopKutusu.cshtml" />
+    <Content Include="Views\CariPanel\GonderilenMesajlar.cshtml" />
+    <Content Include="Views\CariPanel\Yanıtla.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Image\" />
+    <Folder Include="Views\Mesaj\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -3252,6 +3269,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512191502323_mig44.resx">
       <DependentUpon>202512191502323_mig44.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512221125423_mig45.resx">
+      <DependentUpon>202512221125423_mig45.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512221157152_mig46.resx">
+      <DependentUpon>202512221157152_mig46.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

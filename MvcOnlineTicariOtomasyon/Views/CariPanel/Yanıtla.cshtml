@@ -1,0 +1,52 @@
+﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
+@model Mesajlar
+
+@{
+    ViewBag.Title = "Mesaj Yanıtla";
+    Layout = "~/Views/Shared/_CariLayout.cshtml";
+}
+
+<section class="content-header">
+    <h1>✉️ Mesaj Yanıtla</h1>
+</section>
+
+<section class="content">
+    <div class="card card-primary">
+        <div class="card-body">
+            <form method="post">
+
+                <input type="hidden" name="Alici" value="@Model.Gönderici" />
+
+                <div class="form-group">
+                    <label>Kime</label>
+                    <input type="text" class="form-control"
+                           value="@Model.Gönderici" disabled />
+                </div>
+
+                <div class="form-group">
+                    <label>Konu</label>
+                    <input type="text" name="Konu"
+                           class="form-control"
+                           value="RE: @Model.Konu" />
+                </div>
+
+                <div class="form-group">
+                    <label>Mesaj</label>
+                    <textarea name="İcerik"
+                              class="form-control"
+                              rows="6"
+                              placeholder="Yanıtınızı yazın..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Gönder
+                </button>
+
+                <a href="/CariPanel/GelenMesajlar"
+                   class="btn btn-secondary">
+                    İptal
+                </a>
+            </form>
+        </div>
+    </div>
+</section>

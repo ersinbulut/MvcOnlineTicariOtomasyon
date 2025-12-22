@@ -1,0 +1,140 @@
+﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
+@model List<Mesajlar>
+
+@{
+    Context c = new Context();
+    ViewBag.Title = "Gelen Mesajlar";
+    Layout = "~/Views/Shared/_CariLayout.cshtml";
+
+    string mail = Session["CariMail"]?.ToString();
+
+    var sayi = c.Mesajlars.Count(x =>
+        x.Alici == mail &&
+        x.Okundu == false &&
+        x.Silindi == false);
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>📥 Gelen Mesajlar</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/CariPanel">Anasayfa</a></li>
+                    <li class="breadcrumb-item active">Gelen Mesajlar</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="row">
+
+        <!-- SOL MENÜ -->
+        <div class="col-md-3">
+            <a href="/CariPanel/YeniMesaj" class="btn btn-primary btn-block mb-3">
+                Yeni Mesaj Oluştur
+            </a>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Klasörler</h3>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item active">
+                            <a href="/CariPanel/GelenMesajlar" class="nav-link">
+                                <i class="fas fa-inbox"></i> Gelen Kutusu
+                                <span class="badge bg-primary float-right">@sayi</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/CariPanel/GonderilenMesajlar" class="nav-link">
+                                <i class="far fa-envelope"></i> Gönderilenler
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/CariPanel/CopKutusu" class="nav-link">
+                                <i class="far fa-trash-alt"></i> Çöp Kutusu
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SAĞ TARAF -->
+        <div class="col-md-9">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Gelen Kutusu</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="mesajAra" class="form-control" placeholder="Mesaj ara...">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive mailbox-messages">
+                        <table class="table table-hover table-striped">
+                            <tbody id="mesajTable">
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="@(item.Okundu ? "" : "font-weight-bold")">
+                                        <td>@item.Gönderici</td>
+                                        <td>
+                                            <b>@item.Konu</b> -
+                                            @(item.İcerik.Length > 40
+                                                ? item.İcerik.Substring(0, 40) + "..."
+                                                : item.İcerik)
+                                        </td>
+                                        <td>@item.Tarih.ToShortDateString()</td>
+                                        <td>
+                                            <a href="/CariPanel/MesajDetay/@item.MesajID"
+                                               class="btn btn-sm btn-info">
+                                                Oku
+                                            </a>
+                                            <a href="/CariPanel/MesajSil/@item.MesajID"
+                                               class="btn btn-sm btn-danger"
+                                               onclick="return confirm('Mesaj silinsin mi?')">
+                                                Sil
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        @if (!Model.Any())
+                        {
+                            <div class="alert alert-info m-3">
+                                Henüz gelen mesajınız bulunmamaktadır.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    $("#mesajAra").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#mesajTable tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+</script>
