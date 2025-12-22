@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Index5";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h1>Ürün Stok Grafiği</h1>
+<br />
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("VisualizeUrunResult2", "Grafik")',
+            success: function (result) {
+
+                google.charts.load('current', { packages: ['PieChart'] });
+                google.charts.setOnLoadCallback(function () {
+                    drawChart(result);
+                });
+            }
+        });
+
+    });
+
+    function drawChart(result) {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Ürün');
+        data.addColumn('number', 'Stok');
+
+        var rows = [];
+        $.each(result, function (i, obj) {
+            rows.push([obj.urn, obj.stk]);
+        });
+
+        data.addRows(rows);
+
+        var options = {
+            width: 1200,
+            height: 800,
+            curveType: 'function',
+            legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.PieChart(
+            document.getElementById('PieChart_div')
+        );
+
+        chart.draw(data, options);
+    }
+</script>
+
+<div id="PieChart_div"></div>
