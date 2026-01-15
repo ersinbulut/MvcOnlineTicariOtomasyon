@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using MvcOnlineTicariOtomasyon.Models.Siniflar;
+using PagedList;
 
 namespace MvcOnlineTicariOtomasyon.Controllers
 {
@@ -19,6 +21,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             ViewBag.m = mail;
             return View(degerler);
         }
+        [Authorize]
         public ActionResult Siparislerim()
         {
             var mail = (string)Session["CariMail"];
@@ -26,7 +29,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             var degerler = c.satisHarekets.Where(x => x.CariID == id).ToList();
             return View(degerler);
         }
-
+        [Authorize]
         // GELEN MESAJLAR
         public ActionResult GelenMesajlar()
         {
@@ -36,10 +39,15 @@ namespace MvcOnlineTicariOtomasyon.Controllers
                 .Where(x => x.Alici == mail && x.Silindi == false)
                 .OrderByDescending(x => x.Tarih)
                 .ToList();
+            var gelensayisi = c.Mesajlars.Count(x => x.Alici == mail).ToString();
+            ViewBag.d1 = gelensayisi;
+
+            var gidensayisi = c.Mesajlars.Count(x => x.Alici == mail).ToString();
+            ViewBag.d2 = gidensayisi;
 
             return View(mesajlar);
         }
-
+        [Authorize]
         public ActionResult GonderilenMesajlar()
         {
             string mail = (string)Session["CariMail"];
@@ -51,6 +59,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 
             return View(mesajlar);
         }
+        [Authorize]
         public ActionResult CopKutusu()
         {
             string mail = (string)Session["CariMail"];
@@ -62,6 +71,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 
             return View(mesajlar);
         }
+        [Authorize]
         public ActionResult GeriAl(int id)
         {
             var mesaj = c.Mesajlars.Find(id);
@@ -76,7 +86,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             return RedirectToAction("CopKutusu");
         }
 
-
+        [Authorize]
         // MESAJ DETAY
         public ActionResult MesajDetay(int id)
         {
@@ -90,7 +100,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 
             return View(mesaj);
         }
-
+        [Authorize]
         [HttpGet]
         public ActionResult Yanıtla(int id)
         {
@@ -104,6 +114,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 
             return View(m);
         }
+        [Authorize]
         [HttpPost]
         public ActionResult Yanıtla(Mesajlar m)
         {
@@ -118,7 +129,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             return RedirectToAction("GonderilenMesajlar");
         }
 
-
+        [Authorize]
         public ActionResult MesajSil(int id)
         {
             var mesaj = c.Mesajlars.Find(id);
@@ -134,13 +145,13 @@ namespace MvcOnlineTicariOtomasyon.Controllers
         }
 
 
-
+        [Authorize]
         [HttpGet]
         public ActionResult YeniMesaj()
         {
             return View();
         }
-
+        [Authorize]
         [HttpPost]
         public ActionResult YeniMesaj(Mesajlar m)
         {
@@ -154,7 +165,37 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 
             return RedirectToAction("GelenMesajlar");
         }
+        [Authorize]
+        public ActionResult KargoTakip(string search, int page = 1, int pageSize = 10)
+        {
+            var kargolar = c.KargoDetays.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                kargolar = kargolar.Where(x => x.TakipKodu == search);
+            }
 
+            ViewBag.CurrentSearch = search;
+            ViewBag.PageSize = pageSize;
+
+            var sonuc = kargolar
+                .OrderByDescending(x => x.Tarih)
+                .ToPagedList(page, pageSize);
+
+            return View(sonuc);
+        }
+        [Authorize]
+        public ActionResult CariKargoTakip(string id)
+        {
+            var kargo = c.KargoTakips.Where(x => x.TakipKodu == id).ToList();
+            return View(kargo);
+        }
+
+        public ActionResult LogOut()
+        {
+            FormsAuthentication.SignOut();
+            Session.Abandon();
+            return RedirectToAction("Index", "Login");
+        }
     }
 }

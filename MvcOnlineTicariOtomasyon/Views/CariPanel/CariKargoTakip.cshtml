@@ -1,0 +1,66 @@
+﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
+@model List<KargoTakip>
+
+@{
+    ViewBag.Title = "CariKargoTakip";
+    Layout = "~/Views/Shared/_CariLayout.cshtml";
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                <i class="fa-solid fa-truck-fast me-2"></i>
+                Kargo Takip Detayları
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Count == 0)
+            {
+                <div class="alert alert-warning text-center">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    Bu takip koduna ait kargo bilgisi bulunamadı.
+                </div>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush">
+
+                    @foreach (var item in Model)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center hover-item">
+                            <div>
+                                <i class="fa-solid fa-location-dot text-primary me-2"></i>
+                                <strong>@item.Aciklama</strong>
+                            </div>
+
+                            <span class="badge bg-secondary p-2">
+                                <i class="fa-regular fa-clock me-1"></i>
+                                @item.TarihZaman.ToString("dd.MM.yyyy HH:mm")
+                            </span>
+                        </li>
+                    }
+
+                </ul>
+            }
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-item {
+        transition: all 0.2s ease-in-out;
+    }
+
+        .hover-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+</style>
