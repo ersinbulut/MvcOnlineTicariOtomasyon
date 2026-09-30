@@ -17,16 +17,18 @@ namespace MvcOnlineTicariOtomasyon.Controllers
         public ActionResult Index()
         {
             var mail = (string)Session["CariMail"];
-            var degerler = c.Carilers.Where(x => x.CariMail == mail).ToList();
+            var degerler = c.Mesajlars.Where(x => x.Alici == mail).ToList();
             ViewBag.m = mail;
-            var mailid=c.Carilers.Where(x => x.CariMail == mail).Select(y => y.CariID).FirstOrDefault();
+            var mailid = c.Carilers.Where(x => x.CariMail == mail).Select(y => y.CariID).FirstOrDefault();
             ViewBag.mid = mailid;
             var toplamsatis = c.satisHarekets.Where(x => x.CariID == mailid).Count();
             ViewBag.toplamsatis = toplamsatis;
             var toplamtutar = c.satisHarekets.Where(x => x.CariID == mailid).Sum(y => y.ToplamTutar);
             ViewBag.toplamtutar = toplamtutar;
-            var toplamurunsayisi = c.satisHarekets.Where(x => x.CariID == mailid).Sum(y=> y.Adet);
+            var toplamurunsayisi = c.satisHarekets.Where(x => x.CariID == mailid).Sum(y => y.Adet);
             ViewBag.toplamurunsayisi = toplamurunsayisi;
+            var adsoyad = c.Carilers.Where(x => x.CariMail == mail).Select(y => y.CariAd + " " + y.CariSoyad).FirstOrDefault();
+            ViewBag.adsoyad = adsoyad;
             return View(degerler);
         }
         [Authorize]
@@ -204,6 +206,14 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             FormsAuthentication.SignOut();
             Session.Abandon();
             return RedirectToAction("Index", "Login");
+        }
+
+        public PartialViewResult Partial1()
+        {
+            var mail = (string)Session["CariMail"];
+            var id = c.Carilers.Where(x => x.CariMail == mail).Select(y => y.CariID).FirstOrDefault();
+            var caribul=c.Carilers.Find(id);
+            return PartialView("Partial1", caribul);
         }
     }
 }
