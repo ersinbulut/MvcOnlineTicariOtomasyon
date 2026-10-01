@@ -215,5 +215,29 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             var caribul=c.Carilers.Find(id);
             return PartialView("Partial1", caribul);
         }
+
+        public PartialViewResult Partial2()
+        {
+            var mail = (string)Session["CariMail"];
+            var mesajlar = c.Mesajlars.Where(x => x.Alici == mail).OrderByDescending(x => x.Tarih).ToList();
+            var gelensayisi = c.Mesajlars.Count(x => x.Alici == mail).ToString();
+            ViewBag.d1 = gelensayisi;
+            var gidensayisi = c.Mesajlars.Count(x => x.Gönderici == mail).ToString();
+            ViewBag.d2 = gidensayisi;
+            return PartialView("Partial2", mesajlar);
+        }
+
+        public ActionResult CariBilgiGuncelle(Cariler cr)
+        {
+            var cari = c.Carilers.Find(cr.CariID);
+            cari.CariAd = cr.CariAd;
+            cari.CariSoyad = cr.CariSoyad;
+            cari.CariSehir = cr.CariSehir;
+            cari.CariMail = cr.CariMail;
+            cari.CariSifre = cr.CariSifre;
+            c.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
     }
 }

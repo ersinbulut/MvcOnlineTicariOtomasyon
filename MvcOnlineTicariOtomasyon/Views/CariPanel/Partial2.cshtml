@@ -1,0 +1,56 @@
+﻿@using MvcOnlineTicariOtomasyon.Models.Siniflar
+@model List<Mesajlar>
+
+
+<!-- The timeline -->
+@foreach (var item in Model)
+{
+    <div class="timeline timeline-inverse">
+
+        <!-- timeline time label -->
+
+        <div class="time-label">
+
+            <span class="bg-danger">
+
+                @item.Tarih.ToShortDateString()
+
+            </span>
+
+        </div>
+
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+
+        <div>
+
+            <i class="fas fa-envelope bg-primary"></i>
+
+            <div class="timeline-item">
+
+                <span class="time"><i class="far fa-clock"></i> @item.Tarih.ToShortTimeString()</span>
+
+                <h3 class="timeline-header"><a href="#">@item.Konu</a></h3>
+
+                <div class="timeline-body">
+
+                    @item.İcerik
+
+                </div>
+
+                <div class="timeline-footer">
+
+                    <a href="#" class="btn btn-primary btn-sm">Devamını Oku</a>
+
+                    <a href="#" class="btn btn-danger btn-sm">Sil</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- END timeline item -->
+    </div>
+
+}
