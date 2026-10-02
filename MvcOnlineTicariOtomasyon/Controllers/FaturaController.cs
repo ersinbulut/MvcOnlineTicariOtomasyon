@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using MvcOnlineTicariOtomasyon.Models.Siniflar;
 using PagedList;
+using System.Data.Entity;
 
 namespace MvcOnlineTicariOtomasyon.Controllers
 {
@@ -136,6 +137,56 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+        [AllowAnonymous]
+        public ActionResult Dinamik()
+        {
+            Class4 cs = new Class4();
+            cs.deger1 = c.Faturalars.Include(x => x.FaturaKalems).ToList();
+            cs.deger2 = c.FaturaKalems.ToList();
+            return View(cs);
+        }
+        [AllowAnonymous]
+        [HttpPost] // Gelen veriyi kabul etmesi için şarttır
+        public ActionResult FaturaKaydet(string FaturaSeriNo, string FaturaSıraNo, DateTime Tarih, string Saat, string VergiDairesi, string TeslimEden, string TeslimAlan, string Toplam, FaturaKalem[] kalemler)
+        {
+            // Yeni bir fatura oluştur
+            Faturalar fatura = new Faturalar
+            {
+                FaturaSeriNo = FaturaSeriNo,
+                FaturaSıraNo = FaturaSıraNo,
+                VergiDairesi = VergiDairesi,
+                Tarih = Tarih,
+                Saat = Saat,
+                TeslimEden = TeslimEden,
+                TeslimAlan = TeslimAlan,
+                // String gelen değeri Decimal'e (veya veritabanınızda neyse ona) çeviriyoruz
+                Toplam = decimal.TryParse(Toplam, out decimal toplamValue) ? toplamValue : 0
+            };
+
+            // Faturayı veritabanına ekle
+            c.Faturalars.Add(fatura);
+
+            // ÖNCE faturayı kaydediyoruz ki, veritabanı faturaya bir ID versin (Identity Insert). 
+            // Aksi halde FaturaID 0 olur ve kalemler boşta kalır veya hata verir.
+            c.SaveChanges();
+
+                foreach (var x in kalemler)
+                {
+                FaturaKalem faturaKalem = new FaturaKalem
+                {
+                    Aciklama = x.Aciklama,
+                    Miktar = x.Miktar,
+                    BirimFiyat = x.BirimFiyat,
+                    Tutar = x.Tutar,
+                    FaturaID = fatura.FaturaID // Yeni oluşturulan faturanın ID'sini kullan
+                };
+                c.FaturaKalems.Add(faturaKalem);
+            }
+                c.SaveChanges(); // Kalemleri kaydet
+          
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
     }
 }

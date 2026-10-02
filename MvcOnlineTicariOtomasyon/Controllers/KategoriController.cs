@@ -75,5 +75,36 @@ namespace MvcOnlineTicariOtomasyon.Controllers
             c.SaveChanges();
             return RedirectToAction("Index");
         }
+        [AllowAnonymous]
+        public ActionResult Deneme()
+        {
+            Class3 cs = new Class3();
+
+            // Kategorileri yükle
+            cs.Kategoriler = new SelectList(c.Kategoris.ToList(), "KategoriID", "KategoriAd");
+
+            // İlk açılışta ürünler tablosunun boş gelmesi daha mantıklı olabilir. 
+            // Tüm ürünleri yüklemek isterseniz eski kodunuzu (c.Uruns.ToList()) kullanabilirsiniz.
+            cs.Urunler = new SelectList(new List<Urun>(), "UrunID", "UrunAd");
+
+            return View(cs);
+        }
+
+        [HttpPost] // Sadece POST isteklerini kabul et
+        [AllowAnonymous]
+        public JsonResult UrunGetir(int p)
+        {
+            // Join kullanmanıza hiç gerek yok, KategoriID üzerinden direkt filtreleyebilirsiniz.
+            // Not: Modelinizdeki kolon adı 'KategoriID' yerine 'KategoriId' ise onu düzeltin.
+            var urunlistesi = c.Uruns
+                               .Where(x => x.Kategoriid == p)
+                               .Select(x => new
+                               {
+                                   Text = x.UrunAd,
+                                   Value = x.UrunID.ToString()
+                               }).ToList();
+
+            return Json(urunlistesi, JsonRequestBehavior.AllowGet);
+        }
     }
 }
