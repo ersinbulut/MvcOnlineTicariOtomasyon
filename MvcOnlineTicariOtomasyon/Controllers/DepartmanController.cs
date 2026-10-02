@@ -26,7 +26,7 @@ namespace MvcOnlineTicariOtomasyon.Controllers
 
             return View(list.ToPagedList(page, pageSize));
         }
-
+        [Authorize(Roles = "A")]
         [HttpGet]
         public ActionResult DepartmanEkle()
         {
